@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Dto\CalculationResultDto;
+use App\Dto\ExchangeRequestDto;
+use App\Dto\ExchangeResponseDto;
 use App\Dto\CurrencyDto;
 use App\Repository\CurrencyRepository;
 use Doctrine\Common\Collections\Collection;
@@ -23,23 +24,30 @@ class CurrencyService
         }
 
         $currencyDto = $this->repository->findCurrency($code, $currencyCollection);
-
         $rate = 1 / $currencyDto->getRate();
 
         return $this->repository->recalculateCurrencyCollection($code, $rate, $currencyCollection);
     }
 
-    public function calculate(): CalculationResultDto
+    public function exchange(ExchangeRequestDto $dto): ExchangeResponseDto
     {
-        return new CalculationResultDto(
+        $currencyCollection = $this->repository->getCollectionFromFile();
+        $currencyFromDto = $this->repository->findCurrency($dto->getCurrencyFrom(), $currencyCollection);
+        $currencyToDto = $this->repository->findCurrency($dto->getCurrencyTo(), $currencyCollection);
+        $exchangeRate = $currencyFromDto->getRate() / $currencyToDto->getRate();
+
+        return new ExchangeResponseDto(
+            amount: $dto->getAmount() * $exchangeRate,
             currencyFrom: new CurrencyDto(
-                code: 'USD',name: 'US Dollar',rate: 1.2222
+                code: $currencyFromDto->getCode(),
+                name: $currencyFromDto->getName(),
+                rate: $currencyFromDto->getRate()
             ),
             currencyTo: new CurrencyDto(
-                code: 'EUR',name: 'Euro',rate: 1.0
-            ),
-            amount: 1.234,
+                code: $currencyToDto->getCode(),
+                name: $currencyToDto->getName(),
+                rate: $currencyToDto->getRate()
+            )
         );
-
     }
 }

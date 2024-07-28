@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
-class CalculationResultDto
+class ExchangeResponseDto
 {
     public function __construct(
+        private readonly float $amount,
         private readonly CurrencyDto $currencyFrom,
-        private readonly CurrencyDto $currencyTo,
-        private readonly float $amount
+        private readonly CurrencyDto $currencyTo
     ) {}
+
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
 
     public function getCurrencyFrom(): CurrencyDto
     {
@@ -19,10 +24,5 @@ class CalculationResultDto
     public function getCurrencyTo(): CurrencyDto
     {
         return $this->currencyTo;
-    }
-
-    public function getAmount(): float
-    {
-        return $this->amount;
     }
 }
