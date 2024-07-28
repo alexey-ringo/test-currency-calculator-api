@@ -6,16 +6,14 @@ namespace App\Repository;
 use App\Dto\CurrencyDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Exception;
 
 class CurrencyRepository
 {
-    private const FILE_NAME_PATH = '/var/currency_rates.json';
-
     public function saveToFile(array $currencyRates): void
     {
         $jsonContent = json_encode($currencyRates, JSON_THROW_ON_ERROR);
-        file_put_contents(self::FILE_NAME_PATH, $jsonContent);
+        file_put_contents(__DIR__ . '/../../var/currency_rates.json', $jsonContent);
     }
 
     public function getCollectionFromFile(): Collection
@@ -37,6 +35,9 @@ class CurrencyRepository
         return $collection;
     }
 
+    /**
+     * @throws Exception
+     */
     public function findCurrency(string $code, Collection $currencyCollection): CurrencyDto
     {
         $filteredCollection = $currencyCollection->filter(static function (
@@ -47,8 +48,7 @@ class CurrencyRepository
 
         $currencyDto = $filteredCollection->first();
         if (!$currencyDto instanceof CurrencyDto) {
-//            throw new NotFoundHttpException();
-            throw new \Exception();
+            throw new Exception('Not found currency code: ' . $code, 404);
         }
 
         return $currencyDto;

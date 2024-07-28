@@ -67,6 +67,12 @@ class RemoteApiProvider
             $result[] = $item;
         }
 
+        $usd = [];
+        $usd['code'] = 'USD';
+        $usd['name'] = 'United States Dollar';
+        $usd['rate'] = 1.0;
+        $result[] = $usd;
+
         return $result;
     }
 
