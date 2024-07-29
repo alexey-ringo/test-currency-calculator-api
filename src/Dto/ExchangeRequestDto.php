@@ -13,7 +13,7 @@ class ExchangeRequestDto
 
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    #[Assert\Length(min: 3, max: 3)]
+    #[Assert\Length(min: 3, max: 5)]
     private string $currencyFrom;
 
 
